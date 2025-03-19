@@ -13,10 +13,13 @@ fi
 
 #If this is the first time, generate certificates
 if [ ! -f /PlexConnect/assets/certificates/trailers.pem ]; then
-  echo "*** Generating certificates ***"
-  openssl req -new -nodes -newkey rsa:2048 -out ./trailers.pem -keyout ./trailers.key -x509 -days 7300 -subj "/C=US/CN=trailers.apple.com"
-  openssl x509 -in ./trailers.pem -outform der -out ./trailers.cer && cat ./trailers.key >> ./trailers.pem
-  mv trailers.* /PlexConnect/assets/certificates
+  # Use the APP_CN environment variable or default to appletv.flickr.com (testing)
+  APP_CN=${APP_CN:-appletv.flickr.com}
+
+  echo "*** Generating certificates for ${APP_CN} ***"
+  openssl req -new -nodes -newkey rsa:2048 -out ./cert.pem -keyout ./cert.key -x509 -days 7300 -subj "/C=US/CN=${APP_CN}"
+  openssl x509 -in ./cert.pem -outform der -out ./cert.cer && cat ./cert.key >> ./cert.pem
+  mv cert.* /PlexConnect/assets/certificates
 fi
 
 echo "*** Setting userID and groupID ***"
